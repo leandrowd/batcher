@@ -1,0 +1,33 @@
+{
+  "name": "batcher.js",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "repository": "https://github.com/leandrowd/batcher",
+  "author": {
+    "name": "Leandro Lemos",
+    "email": "leandrowd+os@gmail.com",
+    "url": "http://leandro.js.org/"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "xo && ava"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    ""
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "ava": "^0.15.0",
+    "sinon": "^1.17.5",
+    "xo": "^0.16.0"
+  },
+  "xo": {
+    "esnext": true
+  }
+}
