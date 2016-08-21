@@ -1,34 +1,41 @@
 'use strict';
 
-module.exports = interval => {
+module.exports = function (interval) {
 	if (!interval) {
 		interval = 0;
 	}
 
-	let executor;
-	let collector;
+	var executor;
+	var collector;
 
-	const aggregator = (collector, options) => collector.push(options);
+	function aggregator(collector, options) {
+		return collector.push(options);
+	}
 
-	const reset = () => {
+	function reset() {
 		executor = null;
 		collector = [];
-	};
+	}
 
 	reset();
 
-	const execute = fn => setTimeout(() => {
-		fn();
-		reset();
-	}, interval);
+	function execute(fn) {
+		return setTimeout(function () {
+			fn();
+			reset();
+		}, interval);
+	}
 
-	return (fn, options) => {
+	return function (fn, options) {
 		if (executor) {
 			clearTimeout(executor);
 		}
 
 		aggregator(collector, options);
-		const clone = collector.slice();
-		executor = execute(() => fn(clone));
+
+		var clone = collector.slice();
+		executor = execute(function () {
+			return fn(clone);
+		});
 	};
 };
