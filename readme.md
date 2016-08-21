@@ -1,6 +1,4 @@
-# batcher.js [![Build Status](https://travis-ci.org/https://github.com/leandrowd/batcher.svg?branch=master)](https://travis-ci.org/https://github.com/leandrowd/batcher)
-
->
+# batcher.js [![Build Status](https://api.travis-ci.org/leandrowd/batcher.svg?branch=master)](https://api.travis-ci.org/leandrowd/batcher)
 
 
 ## Install
@@ -13,7 +11,6 @@ $ npm install --save batcher.js
 ## Usage
 
 ```js
-
 const batch = batcher();
 
 batch(options => myMethod(options), {id: 1});
