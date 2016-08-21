@@ -4,7 +4,7 @@
 ## Install
 
 ```
-$ npm install --save batcher.js
+$ npm install --save batcher-js
 ```
 
 
