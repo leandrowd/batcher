@@ -1,5 +1,6 @@
 # batcher.js [![Build Status](https://api.travis-ci.org/leandrowd/batcher.svg?branch=master)](https://api.travis-ci.org/leandrowd/batcher)
 
+> Batch function calls with ease :)
 
 ## Install
 

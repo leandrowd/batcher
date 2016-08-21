@@ -1,7 +1,7 @@
 {
   "name": "batcher-js",
   "version": "0.0.1",
-  "description": "",
+  "description": "Batching with ease",
   "license": "MIT",
   "repository": "https://github.com/leandrowd/batcher",
   "author": {
@@ -19,7 +19,9 @@
     "index.js"
   ],
   "keywords": [
-    ""
+    "batch",
+    "function",
+    "async"
   ],
   "dependencies": {},
   "devDependencies": {
