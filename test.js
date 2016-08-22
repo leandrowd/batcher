@@ -2,18 +2,35 @@ import test from 'ava';
 import sinon from 'sinon';
 import batcher from './';
 
-test.cb('will batch multiple function calls in a given interval - default is zero', t => {
+test('should throw if created without a method as first argument', t => {
+	t.plan(3);
+
+	t.throws(() => batcher(), TypeError, 'The first argument should be a function');
+	t.throws(() => batcher(1), TypeError, 'The first argument should be a function');
+	t.notThrows(() => batcher(function () {}));
+});
+
+test('should throw if parameters are not passed to the batched call', t => {
+	t.plan(2);
+
+	const batch = batcher(function () {});
+
+	t.throws(() => batch(), TypeError, 'Missing parameters in batched call');
+	t.notThrows(() => batch({}));
+});
+
+test.cb('should batch multiple function calls in a given interval - default is zero', t => {
 	t.plan(2);
 
 	const myMethod = sinon.spy();
 
-	const batch = batcher();
+	const batch = batcher(myMethod);
 
-	batch(options => myMethod(options), {id: 1});
-	batch(options => myMethod(options), {id: 2});
-	batch(options => myMethod(options), {id: 3});
-	batch(options => myMethod(options), {id: 4});
-	batch(options => myMethod(options), {id: 5});
+	batch({id: 1});
+	batch({id: 2});
+	batch({id: 3});
+	batch({id: 4});
+	batch({id: 5});
 
 	setTimeout(() => {
 		t.true(myMethod.calledOnce);
@@ -22,21 +39,21 @@ test.cb('will batch multiple function calls in a given interval - default is zer
 	});
 });
 
-test.cb('will not batch function calls out of the interval', t => {
+test.cb('should not batch function calls out of the interval', t => {
 	t.plan(3);
 
 	const myMethod = sinon.spy();
 
-	const batch = batcher();
+	const batch = batcher(myMethod);
 
-	batch(options => myMethod(options), {id: 1});
-	batch(options => myMethod(options), {id: 2});
-	batch(options => myMethod(options), {id: 3});
-	batch(options => myMethod(options), {id: 4});
-	batch(options => myMethod(options), {id: 5});
+	batch({id: 1});
+	batch({id: 2});
+	batch({id: 3});
+	batch({id: 4});
+	batch({id: 5});
 
 	setTimeout(() => {
-		batch(options => myMethod(options), {id: 6});
+		batch({id: 6});
 
 		setTimeout(() => {
 			t.true(myMethod.calledTwice);
@@ -47,21 +64,21 @@ test.cb('will not batch function calls out of the interval', t => {
 	}, 5);
 });
 
-test.cb('will allow to define a custom interval', t => {
+test.cb('should allow to define a custom interval', t => {
 	t.plan(2);
 
 	const myMethod = sinon.spy();
 
-	const batch = batcher(10);
+	const batch = batcher(myMethod, 10);
 
-	batch(options => myMethod(options), {id: 1});
-	batch(options => myMethod(options), {id: 2});
-	batch(options => myMethod(options), {id: 3});
-	batch(options => myMethod(options), {id: 4});
-	batch(options => myMethod(options), {id: 5});
+	batch({id: 1});
+	batch({id: 2});
+	batch({id: 3});
+	batch({id: 4});
+	batch({id: 5});
 
 	setTimeout(() => {
-		batch(options => myMethod(options), {id: 6});
+		batch({id: 6});
 
 		setTimeout(() => {
 			t.true(myMethod.calledOnce);

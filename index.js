@@ -1,6 +1,10 @@
 'use strict';
 
-module.exports = function (interval) {
+module.exports = function (method, interval) {
+	if (!method || typeof method !== 'function') {
+		throw new TypeError('The first argument should be a function');
+	}
+
 	if (!interval) {
 		interval = 0;
 	}
@@ -26,7 +30,11 @@ module.exports = function (interval) {
 		}, interval);
 	}
 
-	return function (fn, options) {
+	return function (options) {
+		if (typeof options === 'undefined') {
+			throw new TypeError('Missing parameters in batched call');
+		}
+
 		if (executor) {
 			clearTimeout(executor);
 		}
@@ -34,8 +42,9 @@ module.exports = function (interval) {
 		aggregator(collector, options);
 
 		var clone = collector.slice();
+
 		executor = execute(function () {
-			return fn(clone);
+			return method(clone);
 		});
 	};
 };
