@@ -92,7 +92,7 @@ test.cb('should not batch together function calls with different callback', t =>
 	batch({id: 9}, callback2);
 	batch({id: 10}, callback2);
 	batch({id: 123}, callback2);
-	
+
 	setTimeout(() => {
 		batch({id: 6}, callback1);
 
