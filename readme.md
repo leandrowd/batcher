@@ -4,6 +4,8 @@
 
 It's like a debounce but you don't need to miss the intermediate calls.
 
+Batcher aggregates your options and group calls in a given interval using a function hash, so you can avoid repetitive calls to the same function.
+
 ## Install
 
 ```
@@ -16,15 +18,23 @@ $ npm install --save batcher-js
 ```js
 const batch = batcher(myMethod);
 
-batch({id: 1});
-batch({id: 2});
-batch({id: 3});
-batch({id: 4});
-batch({id: 5});
+const callback1 = () => 'callback1';
+const callback2 = () => 'callback2';
 
-// -> myMethod will be called only once with [{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}];
+batch({id: 1}, callback1);
+batch({id: 2}, callback1);
+batch({id: 3}, callback1);
+batch({id: 4}, callback1);
+batch({id: 5}, callback1);
+batch({id: 6}, callback2);
+batch({id: 7}, callback2);
+
+// there will be only two calls to myMethod:
+// -> myMethod([{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}], callback1); //and
+// -> myMethod([{id: 6}, {id: 7}], callback2);
 ```
 
+More examples available in [test.js](test.js)
 
 ## API
 
@@ -46,7 +56,7 @@ Default: 0
 The interval between calls to be batched - defaults to 0 meaning that only calls in the same cycle of the event loop are going to be batched; Increase the number for more tolerance.
 
 
-### batch(options)
+### batch(options, callback)
 > The return of a call for batcher()
 
 #### options
@@ -55,6 +65,12 @@ Type: `any`
 
 The arguments to be passed to the batched method. It will be pushed to an Array and passed to the method at the end of the batch.
 
+
+#### callback
+
+Type: `function`
+
+The callback to be passed to the batched method. Calls are grouped based on the hash of this method.
 
 ## License
 
