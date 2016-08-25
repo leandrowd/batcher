@@ -16,7 +16,7 @@ test('should throw if parameters are not passed to the batched call', t => {
 	const batch = batcher(function () {});
 
 	t.throws(() => batch(), TypeError, 'Missing parameters in batched call');
-	t.notThrows(() => batch({}));
+	t.notThrows(() => batch({}, () => 123));
 });
 
 test.cb('should batch multiple function calls in a given interval - default is zero', t => {
@@ -25,12 +25,13 @@ test.cb('should batch multiple function calls in a given interval - default is z
 	const myMethod = sinon.spy();
 
 	const batch = batcher(myMethod);
+	const callback = () => undefined;
 
-	batch({id: 1});
-	batch({id: 2});
-	batch({id: 3});
-	batch({id: 4});
-	batch({id: 5});
+	batch({id: 1}, callback);
+	batch({id: 2}, callback);
+	batch({id: 3}, callback);
+	batch({id: 4}, callback);
+	batch({id: 5}, callback);
 
 	setTimeout(() => {
 		t.true(myMethod.calledOnce);
@@ -45,20 +46,60 @@ test.cb('should not batch function calls out of the interval', t => {
 	const myMethod = sinon.spy();
 
 	const batch = batcher(myMethod);
+	const callback = () => undefined;
 
-	batch({id: 1});
-	batch({id: 2});
-	batch({id: 3});
-	batch({id: 4});
-	batch({id: 5});
+	batch({id: 1}, callback);
+	batch({id: 2}, callback);
+	batch({id: 3}, callback);
+	batch({id: 4}, callback);
+	batch({id: 5}, callback);
 
 	setTimeout(() => {
-		batch({id: 6});
+		batch({id: 6}, callback);
 
 		setTimeout(() => {
 			t.true(myMethod.calledTwice);
 			t.true(myMethod.firstCall.calledWith([{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}]));
 			t.true(myMethod.secondCall.calledWith([{id: 6}]));
+			t.end();
+		}, 15);
+	}, 5);
+});
+
+test.cb('should not batch together function calls with different callback', t => {
+	t.plan(5);
+
+	const myMethod = sinon.spy();
+
+	const batch = batcher(myMethod);
+	const callback1 = function () { return 'hit me'; };
+	const callback2 = function () { return 'baby'; };
+	const callback3 = function () { return 'one more time'; };
+
+	batch({id: 1}, callback1);
+	batch({id: 2}, callback1);
+	batch({id: 3}, callback1);
+	batch({id: 4}, callback1);
+	batch({id: 5}, callback1);
+
+	batch({id: 8}, callback2);
+	batch({id: 9}, callback2);
+	batch({id: 10}, callback2);
+	batch({id: 123}, callback2);
+
+
+	setTimeout(() => {
+		batch({id: 6}, callback1);
+
+		batch({id: 890}, callback3);
+		batch({id: 8}, callback3);
+
+		setTimeout(() => {
+			t.true(myMethod.callCount === 4);
+			t.true(myMethod.firstCall.calledWith([{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}]));
+			t.true(myMethod.secondCall.calledWith([{id: 8}, {id: 9}, {id: 10}, {id: 123}]));
+			t.true(myMethod.thirdCall.calledWith([{id: 6}]));
+			t.true(myMethod.lastCall.calledWith([{id: 890}, {id: 8}]));
 			t.end();
 		}, 15);
 	}, 5);
@@ -70,15 +111,16 @@ test.cb('should allow to define a custom interval', t => {
 	const myMethod = sinon.spy();
 
 	const batch = batcher(myMethod, 10);
+	const callback = () => undefined;
 
-	batch({id: 1});
-	batch({id: 2});
-	batch({id: 3});
-	batch({id: 4});
-	batch({id: 5});
+	batch({id: 1}, callback);
+	batch({id: 2}, callback);
+	batch({id: 3}, callback);
+	batch({id: 4}, callback);
+	batch({id: 5}, callback);
 
 	setTimeout(() => {
-		batch({id: 6});
+		batch({id: 6}, callback);
 
 		setTimeout(() => {
 			t.true(myMethod.calledOnce);

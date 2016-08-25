@@ -1,3 +1,4 @@
+/* eslint no-fallthrough: 0, default-case: 0 */
 /**
  * JS Implementation of MurmurHash3 (r136) (as of May 20, 2011)
  *
@@ -11,16 +12,16 @@
  * @return {number} 32-bit positive integer hash
  */
 
-module.exports = function murmurhash3_32_gc(key, seed) {
-	var remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i;
+module.exports = function murmurHash(key, seed) {
+	var remainder = key.length & 3; // key.length % 4
+	var bytes = key.length - remainder;
+	var h1 = seed;
+	var c1 = 0xcc9e2d51;
+	var c2 = 0x1b873593;
+	var i = 0;
 
-	remainder = key.length & 3; // key.length % 4
-	bytes = key.length - remainder;
-	h1 = seed;
-	c1 = 0xcc9e2d51;
-	c2 = 0x1b873593;
-	i = 0;
-
+	var k1;
+	var h1b;
 	while (i < bytes) {
 		k1 =
 			((key.charCodeAt(i) & 0xff)) |
