@@ -13,7 +13,8 @@
     "node": ">=4"
   },
   "scripts": {
-    "test": "xo && ava"
+    "test": "xo && ava",
+    "test-watch": "ava --watch"
   },
   "files": [
     "index.js"
@@ -23,7 +24,9 @@
     "function",
     "async"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "murmurhash": "0.0.2"
+  },
   "devDependencies": {
     "ava": "^0.15.0",
     "sinon": "^1.17.5",
