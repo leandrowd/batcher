@@ -1,5 +1,11 @@
 'use strict';
 
+const murmorhash3 = require('./murmurhash3');
+
+function getFunctionHash(fn) {
+	return murmorhash3(fn.toString(), 1);
+}
+
 module.exports = function (method, interval) {
 	if (!method || typeof method !== 'function') {
 		throw new TypeError('The first argument should be a function');
@@ -9,42 +15,43 @@ module.exports = function (method, interval) {
 		interval = 0;
 	}
 
-	var executor;
-	var collector;
+	var executors = {};
+	var collectors = {};
 
-	function aggregator(collector, options) {
-		return collector.push(options);
-	}
-
-	function reset() {
-		executor = null;
-		collector = [];
-	}
-
-	reset();
-
-	function execute(fn) {
+	function execute(callbackHash) {
 		return setTimeout(function () {
-			fn();
-			reset();
+			const collector = collectors[callbackHash];
+			console.log(collector.callback);
+			method(collector.options, collector.callback);
+			delete collectors[callbackHash];
 		}, interval);
 	}
 
-	return function (options) {
+	function aggregate(options, callback) {
+		var callbackHash = getFunctionHash(callback);
+
+		collectors[callbackHash] = collectors[callbackHash] || {
+			options: [],
+			hash: callbackHash
+		};
+
+		collectors[callbackHash].options.push(options);
+		collectors[callbackHash].callback = callback;
+
+		return collectors[callbackHash];
+	}
+
+	return function (options, callback) {
 		if (typeof options === 'undefined') {
 			throw new TypeError('Missing parameters in batched call');
 		}
 
-		if (executor) {
-			clearTimeout(executor);
+		var collector = aggregate(options, callback);
+
+		if (executors[collector.hash]) {
+			clearTimeout(executors[collector.hash]);
 		}
 
-		aggregator(collector, options);
-
-		var clone = collector.slice();
-
-		executor = execute(function () {
-			return method(clone);
-		});
+		executors[collector.hash] = execute(collector.hash);
 	};
 };
