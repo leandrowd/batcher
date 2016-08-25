@@ -1,9 +1,9 @@
 'use strict';
 
-const murmorhash3 = require('./murmurhash3');
+const murmurhash = require('murmurhash');
 
 function getFunctionHash(fn) {
-	return murmorhash3(fn.toString(), 1);
+	return murmurhash.v3(fn.toString(), 1);
 }
 
 module.exports = function (method, interval) {
