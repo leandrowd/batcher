@@ -1,6 +1,6 @@
 'use strict';
 
-const murmurhash = require('murmurhash');
+var murmurhash = require('murmurhash');
 
 function getFunctionHash(fn) {
 	return murmurhash.v3(fn.toString(), 1);
@@ -20,7 +20,7 @@ module.exports = function (method, interval) {
 
 	function execute(callbackHash) {
 		return setTimeout(function () {
-			const collector = collectors[callbackHash];
+			var collector = collectors[callbackHash];
 			method(collector.options, collector.callback);
 			delete collectors[callbackHash];
 		}, interval);
