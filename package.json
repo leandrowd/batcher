@@ -14,7 +14,7 @@
   },
   "scripts": {
     "test": "xo && ava",
-    "test-watch": "ava --watch"
+    "test-watch": "ava --watch --verbose"
   },
   "files": [
     "index.js"

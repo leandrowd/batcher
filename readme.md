@@ -38,7 +38,7 @@ More examples available in [test.js](test.js)
 
 ## API
 
-### batcher(method, interval)
+### batcher(method, settings)
 
 Returns a batch method to wrap each call to be batched. Use one for each purpose.
 
@@ -48,12 +48,17 @@ Type: `function`
 
 The method to be batched
 
-#### interval
+#### settings
 
-Type: `number`
-Default: 0
+Type: `object`
+Default: {
+	interval: 0,
+	maximum: null
+}
 
-The interval between calls to be batched - defaults to 0 meaning that only calls in the same cycle of the event loop are going to be batched; Increase the number for more tolerance.
+Custom settings for the batcher. It allows to customize:
+	- `interval`:  the interval between calls to be batched - defaults to 0 meaning that only calls in the same cycle of the event loop are going to be batched; Increase the number for more tolerance.
+	- `maximum`: the maximum ammount of calls to be batched - defaults to null or no limit. Use this number if your api has a limit.
 
 
 ### batch(options, callback)

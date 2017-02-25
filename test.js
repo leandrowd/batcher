@@ -134,3 +134,53 @@ test.cb('should allow to define a custom interval', t => {
 		}, 10);
 	}, 5);
 });
+
+test.cb('should allow to define a maximum limit', t => {
+	t.plan(4);
+
+	const myMethod = sinon.spy();
+
+	const batch = batcher(myMethod, {maximum: 2});
+	const callback = () => undefined;
+
+	batch({id: 1}, callback);
+	batch({id: 2}, callback);
+	batch({id: 3}, callback);
+	batch({id: 4}, callback);
+	batch({id: 5}, callback);
+
+	setTimeout(() => {
+		t.true(myMethod.calledThrice);
+		t.true(myMethod.calledWith([{id: 1}, {id: 2}]));
+		t.true(myMethod.calledWith([{id: 3}, {id: 4}]));
+		t.true(myMethod.calledWith([{id: 5}]));
+		t.end();
+	}, 5);
+});
+
+test.cb('should allow to define a maximum limit with custom intervals', t => {
+	t.plan(5);
+
+	const myMethod = sinon.spy();
+
+	const batch = batcher(myMethod, {maximum: 2, interval: 1});
+	const callback = () => undefined;
+
+	batch({id: 1}, callback);
+	batch({id: 2}, callback);
+	batch({id: 3}, callback);
+	batch({id: 4}, callback);
+	batch({id: 5}, callback);
+
+	setTimeout(() => {
+		batch({id: 6}, callback);
+		t.true(myMethod.calledWith([{id: 1}, {id: 2}]));
+		t.true(myMethod.calledWith([{id: 3}, {id: 4}]));
+		t.true(myMethod.calledWith([{id: 5}]));
+		setTimeout(() => {
+			t.true(myMethod.calledWith([{id: 6}]));
+			t.true(myMethod.getCalls().length === 4);
+			t.end();
+		}, 5);
+	}, 5);
+});
