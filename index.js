@@ -6,13 +6,20 @@ function getFunctionHash(fn) {
 	return murmurhash.v3(fn.toString(), 1);
 }
 
-module.exports = function (method, interval) {
+module.exports = function (method, settings) {
 	if (!method || typeof method !== 'function') {
 		throw new TypeError('The first argument should be a function');
 	}
 
-	if (!interval) {
-		interval = 0;
+	var interval = 0;
+	var maximum = null;
+
+	// keeps compatibility with initial version
+	if (typeof settings === 'number') {
+		interval = settings;
+	} else if (typeof settings === 'object') {
+		interval = settings.interval;
+		maximum = settings.maximum || null;
 	}
 
 	var executors = {};
@@ -20,10 +27,14 @@ module.exports = function (method, interval) {
 
 	function execute(callbackHash) {
 		return setTimeout(function () {
-			var collector = collectors[callbackHash];
-			method(collector.options, collector.callback);
-			delete collectors[callbackHash];
+			run(callbackHash);
 		}, interval);
+	}
+
+	function run(callbackHash) {
+		var collector = collectors[callbackHash];
+		method(collector.options, collector.callback);
+		delete collectors[callbackHash];
 	}
 
 	function aggregate(options, callback) {
@@ -52,5 +63,10 @@ module.exports = function (method, interval) {
 		}
 
 		executors[collector.hash] = execute(collector.hash);
+
+		if (maximum && collector.options.length >= maximum) {
+			clearTimeout(executors[collector.hash]);
+			run(collector.hash);
+		}
 	};
 };
