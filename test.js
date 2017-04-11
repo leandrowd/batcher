@@ -184,3 +184,26 @@ test.cb('should allow to define a maximum limit with custom intervals', t => {
 		}, 5);
 	}, 5);
 });
+
+test.cb('should aggregate by callback instance', t => {
+	t.plan(5);
+
+	const myMethod = sinon.spy();
+
+	const batch = batcher(myMethod);
+
+	batch({id: 1}, () => undefined);
+	batch({id: 2}, () => undefined);
+	batch({id: 3}, () => undefined);
+	batch({id: 4}, () => undefined);
+	batch({id: 5}, () => undefined);
+
+	setTimeout(() => {
+		t.true(myMethod.calledWith([{id: 1}]));
+		t.true(myMethod.calledWith([{id: 2}]));
+		t.true(myMethod.calledWith([{id: 3}]));
+		t.true(myMethod.calledWith([{id: 4}]));
+		t.true(myMethod.calledWith([{id: 5}]));
+		t.end();
+	}, 0);
+});

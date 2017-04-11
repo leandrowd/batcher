@@ -24,9 +24,6 @@
     "function",
     "async"
   ],
-  "dependencies": {
-    "murmurhash": "0.0.2"
-  },
   "devDependencies": {
     "ava": "^0.15.0",
     "sinon": "^1.17.5",

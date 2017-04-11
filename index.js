@@ -1,9 +1,35 @@
 'use strict';
 
-var murmurhash = require('murmurhash');
+function get(arr, key) {
+	return findFirstPair(arr, key, function (i) {
+		return arr[i].value;
+	});
+}
 
-function getFunctionHash(fn) {
-	return murmurhash.v3(fn.toString(), 1);
+function set(arr, key, value) {
+	var found = findFirstPair(arr, key, function (i) {
+		arr[i].value = value;
+		return true;
+	});
+
+	if (!found) {
+		arr.push({key: key, value: value});
+	}
+}
+
+function del(arr, key) {
+	findFirstPair(arr, key, function (i) {
+		arr.splice(i, 1);
+	});
+}
+
+function findFirstPair(arr, key, func) {
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i].key === key) {
+			return func(i);
+		}
+	}
+	return null;
 }
 
 module.exports = function (method, settings) {
@@ -22,33 +48,25 @@ module.exports = function (method, settings) {
 		maximum = settings.maximum || null;
 	}
 
-	var executors = {};
-	var collectors = {};
+	var executors = [];
+	var collectors = [];
 
-	function execute(callbackHash) {
+	function execute(callback) {
 		return setTimeout(function () {
-			run(callbackHash);
+			run(callback);
 		}, interval);
 	}
 
-	function run(callbackHash) {
-		var collector = collectors[callbackHash];
-		method(collector.options, collector.callback);
-		delete collectors[callbackHash];
+	function run(callback) {
+		method(get(collectors, callback), callback);
+		del(collectors, callback);
 	}
 
 	function aggregate(options, callback) {
-		var callbackHash = getFunctionHash(callback);
-
-		collectors[callbackHash] = collectors[callbackHash] || {
-			options: [],
-			hash: callbackHash
-		};
-
-		collectors[callbackHash].options.push(options);
-		collectors[callbackHash].callback = callback;
-
-		return collectors[callbackHash];
+		var collector = get(collectors, callback) || [];
+		collector.push(options);
+		set(collectors, callback, collector);
+		return collector;
 	}
 
 	return function (options, callback) {
@@ -57,16 +75,15 @@ module.exports = function (method, settings) {
 		}
 
 		var collector = aggregate(options, callback);
-
-		if (executors[collector.hash]) {
-			clearTimeout(executors[collector.hash]);
+		var executor = get(executors, callback);
+		if (executor) {
+			clearTimeout(executor);
 		}
+		set(executors, callback, execute(callback));
 
-		executors[collector.hash] = execute(collector.hash);
-
-		if (maximum && collector.options.length >= maximum) {
-			clearTimeout(executors[collector.hash]);
-			run(collector.hash);
+		if (maximum && collector.length >= maximum) {
+			clearTimeout(get(executors, callback));
+			run(callback);
 		}
 	};
 };
