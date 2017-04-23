@@ -10,11 +10,13 @@
     "url": "http://leandro.js.org/"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "scripts": {
     "test": "xo && ava",
-    "test-watch": "ava --watch --verbose"
+    "test-watch": "ava --watch --verbose",
+    "prepublish-to-npm": "git pull && npm test",
+    "publish-to-npm": "(git pull origin master && npm version patch && git push origin master && npm publish && git push --tags)"
   },
   "files": [
     "index.js"
