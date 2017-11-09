@@ -1,7 +1,7 @@
 {
   "name": "batcher-js",
   "version": "1.0.1",
-  "description": "Batching with ease",
+  "description": "Batching with ease, like debounce but you don't miss intermediate calls",
   "main": "index",
   "typings": "index",
   "license": "MIT",
@@ -26,7 +26,8 @@
   "keywords": [
     "batch",
     "function",
-    "async"
+    "async",
+    "debounce"
   ],
   "devDependencies": {
     "ava": "^0.15.0",
