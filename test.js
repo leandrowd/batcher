@@ -10,12 +10,13 @@ test('should throw if created without a method as first argument', t => {
 	t.notThrows(() => batcher(function () {}));
 });
 
-test('should throw if parameters are not passed to the batched call', t => {
-	t.plan(2);
+test('should not throw if no parameters are passed to the batched call', t => {
+	t.plan(3);
 
 	const batch = batcher(function () {});
 
-	t.throws(() => batch(), TypeError, 'Missing parameters in batched call');
+	t.notThrows(() => batch()); // No callback, e.g. batch MobX action (synchronous).
+	t.notThrows(() => batch(undefined, () => 123));
 	t.notThrows(() => batch({}, () => 123));
 });
 
