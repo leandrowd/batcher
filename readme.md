@@ -36,6 +36,16 @@ batch({id: 7}, callback2);
 
 More examples available in [test.js](test.js)
 
+### TypeScript
+
+Definitions are included.
+
+```typescript
+import Batcher from "batcher-js";
+```
+
+More examples available in [batcher-js-tests.ts](batcher-js-tests.ts)
+
 ## API
 
 ### batcher(method, settings)

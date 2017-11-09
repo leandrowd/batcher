@@ -2,6 +2,8 @@
   "name": "batcher-js",
   "version": "1.0.1",
   "description": "Batching with ease",
+  "main": "index",
+  "typings": "index",
   "license": "MIT",
   "repository": "https://github.com/leandrowd/batcher",
   "author": {
@@ -13,7 +15,7 @@
     "node": ">=6"
   },
   "scripts": {
-    "test": "xo && ava",
+    "test": "xo && tsc && tslint *.ts && ava",
     "test-watch": "ava --watch --verbose",
     "prepublish-to-npm": "git pull && npm test",
     "publish-to-npm": "(git pull origin master && npm version patch && git push origin master && npm publish && git push --tags)"
@@ -30,6 +32,8 @@
     "ava": "^0.15.0",
     "sinon": "^1.17.5",
     "tap-diff": "^0.1.1",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1",
     "xo": "^0.16.0"
   }
 }
