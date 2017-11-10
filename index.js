@@ -70,10 +70,6 @@ module.exports = function (method, settings) {
 	}
 
 	return function (options, callback) {
-		if (typeof options === 'undefined') {
-			throw new TypeError('Missing parameters in batched call');
-		}
-
 		var collector = aggregate(options, callback);
 		var executor = get(executors, callback);
 		if (executor) {
