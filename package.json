@@ -1,6 +1,6 @@
 {
   "name": "batcher-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Batching with ease, like debounce but you don't miss intermediate calls",
   "main": "index",
   "typings": "index",
